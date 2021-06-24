@@ -9,6 +9,8 @@ on:
     types: [created]
   milestone:
     types: [opened]
+  release:
+  
 jobs:
 
   build:
