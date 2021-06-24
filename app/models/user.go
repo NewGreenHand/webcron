@@ -50,7 +50,7 @@ func UserGetByName(userName string) (*User, error) {
 	return u, nil
 }
 
-func UserUpdate(user *User, fields ...string) error {
-	_, err := orm.NewOrm().Update(user, fields...)
-	return err
+func UserUpdate(user *User, fields ...string) (int64, error) {
+	line, err := orm.NewOrm().Update(user, fields...)
+	return line, err
 }

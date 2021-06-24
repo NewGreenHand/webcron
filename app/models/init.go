@@ -1,35 +1,75 @@
 package models
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-	"net/url"
+	_ "github.com/mattn/go-sqlite3"
+	"os"
+	"webcron/app/libs"
 )
 
 func Init() {
-	dbhost := beego.AppConfig.String("db.host")
-	dbport := beego.AppConfig.String("db.port")
-	dbuser := beego.AppConfig.String("db.user")
-	dbpassword := beego.AppConfig.String("db.password")
-	dbname := beego.AppConfig.String("db.name")
-	timezone := beego.AppConfig.String("db.timezone")
-	if dbport == "" {
-		dbport = "3306"
+	// 用户名:密码@tcp(数据库地址:端口)/数据库名
+	dsn := os.Getenv("DB_URL")
+	if dsn == "" {
+		dsn = beego.AppConfig.String("db.url")
 	}
-	dsn := dbuser + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/" + dbname + "?charset=utf8"
-	if timezone != "" {
-		dsn = dsn + "&loc=" + url.QueryEscape(timezone)
-	}
-	orm.RegisterDataBase("default", "mysql", dsn)
 
+	// 注册数据库, ORM必须注册一个别名为 default 的数据库，作为默认使用
+	if dsn != "" {
+		orm.RegisterDataBase("default", "mysql", dsn+"?charset=utf8")
+	} else {
+		orm.RegisterDataBase("default", "sqlite3", "./webcorn.db")
+	}
+
+	// 注册模型
 	orm.RegisterModel(new(User), new(Task), new(TaskGroup), new(TaskLog))
+
+	// 自动创建表 参数二为是否开启创建表   参数三是否控制台打印数据
+	err := orm.RunSyncdb("default", true, true)
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
 
 	if beego.AppConfig.String("runmode") == "dev" {
 		orm.Debug = true
 	}
+
+	// 注册管理员账号
+	initAdminUser()
 }
 
 func TableName(name string) string {
-	return beego.AppConfig.String("db.prefix") + name
+	prefix := os.Getenv("DB_PREFIX")
+	if prefix == "" {
+		prefix = beego.AppConfig.String("db.prefix")
+	}
+	return prefix + name
+}
+
+func initAdminUser() {
+	user, err := UserGetById(1)
+	if err != nil {
+		user = new(User)
+		user.Id = 1
+		user.Status = 0
+	}
+
+	user.UserName = os.Getenv("admin_user")
+	if user.UserName == "" {
+		user.UserName = "admin"
+	}
+	pwd := os.Getenv("admin_pwd")
+	if pwd == "" {
+		pwd = "admin123"
+	}
+	user.Password = libs.Md5([]byte(pwd + user.Salt))
+	user.Email = os.Getenv("admin_email")
+
+	line, err := UserUpdate(user)
+	if line == 0 {
+		UserAdd(user)
+	}
 }

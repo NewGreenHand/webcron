@@ -22,18 +22,16 @@
 
 ## 安装说明
 
+### 本地安装
 系统需要安装Go和MySQL。
 
 获取源码
 
-	$ go get github.com/lisijie/webcron
-	
-打开配置文件 conf/app.conf，修改相关配置。
-	
+	$ git clone https://github.com/NewGreenHand/webcron.git
 
-创建数据库webcron，再导入install.sql
+项目默认支持 sqlite3, 如需更换成 mysql 则可以修改 conf/app.conf 下的 db.url
 
-	$ mysql -u username -p -D webcron < install.sql
+    db.url = 用户名:密码@tcp(数据库地址:端口)/数据库名
 
 运行
 	
@@ -41,6 +39,11 @@
 	或
 	$ nohup ./webcron 2>&1 > error.log &
 	设为后台运行
+
+### Docker 安装
+
+
+
 
 访问： 
 
