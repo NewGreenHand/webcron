@@ -19,7 +19,7 @@ ENV GIN_MODE=release \
 WORKDIR /app
 
 COPY docker_entrypoint.sh /usr/local/bin
-COPY webcron /app
+COPY release/linux/amd64/webcron /app
 COPY views /app
 COPY static /app
 COPY conf /app
