@@ -1,8 +1,14 @@
 name: Go
 
 on:
-  push
-
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  label:
+    types: [created]
+  milestone:
+    types: [opened]
 jobs:
 
   build:
