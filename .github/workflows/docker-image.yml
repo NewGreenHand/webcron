@@ -17,22 +17,25 @@ jobs:
       # 拉取master分支
       - name: Checkout
         uses: actions/checkout@v2
-
+      # 获取版本号
+      - name: Extract Version
+        id: version_step
+        run: |
+          echo "##[set-output name=version;]VERSION=${GITHUB_REF#$"refs/tags/v"}"
+          echo "##[set-output name=version_tag;]$GITHUB_REPOSITORY:${GITHUB_REF#$"refs/tags/v"}"
+          echo "##[set-output name=latest_tag;]$GITHUB_REPOSITORY:latest"
       # 设置qemu来编译多个平台的镜像
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-
       # 设置buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-
       # 登陆dockerhub
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       # 编译并且推送到dockerhub
       - name: Build and push Docker images
         id: docker_build
@@ -44,3 +47,5 @@ jobs:
           tags: |
             fillpit/webcron:${{env.VERSION_TAG}}
             fillpit/webcron:${{env.LASTEST_TAG}}
+          build-args: |
+            ${{steps.version_step.outputs.version}}
