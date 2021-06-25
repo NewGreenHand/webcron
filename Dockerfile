@@ -1,35 +1,53 @@
-FROM node:lts-alpine3.13
+# 打包依赖阶段使用golang作为基础镜像
+FROM golang:1.16.5-alpine3.13 as builder
 
-# 指定运行时环境变量
-ENV GIN_MODE=release \
-    PORT=8000
-
-#RUN set -ex \
-#    && apk update \
-#    && apk upgrade \
-#    && apk add --no-cache bash tzdata git moreutils curl jq openssh-client \
-#    && rm -rf /var/cache/apk/* \
-#    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-#    && echo "Asia/Shanghai" > /etc/timezone \
-#    && mkdir -p /root/.ssh \
-#    && npm config set registry https://registry.npm.taobao.org \
-#    && cp ./docker_entrypoint.sh /usr/local/bin \
-#    && chmod +x /usr/local/bin/docker_entrypoint.sh
+# 启用go module
+ENV GO111MODULE=on \
+    GOPROXY=https://goproxy.cn,direct \
+    CGO_CFLAGS="-g -O2 -Wno-return-local-addr"
 
 WORKDIR /app
 
-COPY docker_entrypoint.sh /usr/local/bin
-COPY /home/runner/work/webcron/webcron /app
-COPY views /app
-COPY static /app
-COPY conf /app
+COPY . .
+
+# 指定OS等，并go build
+RUN set -ex \
+        && apk update \
+        && apk upgrade \
+        && apk add gcc libc-dev \
+        && go install
+
+# 由于我不止依赖二进制文件，还依赖views文件夹下的html文件还有assets文件夹下的一些静态文件
+# 所以我将这些文件放到了publish文件夹
+RUN mkdir publish && cp /go/bin/webcron publish && \
+    cp -r views publish && cp -r static publish && cp -r conf publish
+
+# 运行阶段指定scratch作为基础镜像
+FROM alpine
+
+WORKDIR /app
+
+ARG TZ="Asia/Shanghai"
+
+# 将上一个阶段publish文件夹下的所有文件复制进来
+COPY --from=builder /app/publish .
 
 RUN set -ex \
-    && apk update \
-    && apk upgrade \
-    && apk add --no-cache sqlite \
-    && chmod +x /usr/local/bin/docker_entrypoint.sh
+       && apk update \
+       && apk upgrade \
+       && apk add --no-cache sqlite bash tzdata \
+       && ln -s /app/webcron /usr/bin/webcron \
+       && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
+       && echo ${TZ} > /etc/timezone \
+       && rm -rf /var/cache/apk/*
 
-EXPOSE 8000
+# 指定运行时环境变量
+ENV GIN_MODE=release \
+    PORT=8000   \
+    TZ=${TZ}
 
-ENTRYPOINT ["docker_entrypoint.sh"]
+EXPOSE 8000/tcp
+
+VOLUME /app
+
+ENTRYPOINT ["webcron"]
