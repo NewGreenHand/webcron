@@ -15,11 +15,11 @@ RUN set -ex \
         && apk update \
         && apk upgrade \
         && apk add gcc libc-dev \
-        && go install
+        && GOOS=linux GOARCH=amd64 go build .
 
 # 由于我不止依赖二进制文件，还依赖views文件夹下的html文件还有assets文件夹下的一些静态文件
-# 所以我将这些文件放到了publish文件夹
-RUN mkdir publish && cp /go/bin/webcron publish && \
+# 所以我将这些文件放到了publish文件夹 /go/bin/webcron
+RUN mkdir publish && cp webcron publish && \
     cp -r views publish && cp -r static publish && cp -r conf publish
 
 # 运行阶段指定scratch作为基础镜像
