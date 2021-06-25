@@ -2,8 +2,8 @@
 FROM golang:1.16.5-alpine3.13 as builder
 
 # 启用go module
+# github actions 编译不设置代理 GOPROXY=https://goproxy.cn,direct \
 ENV GO111MODULE=on \
-    GOPROXY=https://goproxy.cn,direct \
     CGO_CFLAGS="-g -O2 -Wno-return-local-addr"
 
 WORKDIR /app
