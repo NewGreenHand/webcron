@@ -22,7 +22,7 @@ jobs:
       run: pwd && ls
 
     - name: Build2
-      run: go install
+      run: go install -mod=mod
 
     - name: Build3
       run: pwd && ls
