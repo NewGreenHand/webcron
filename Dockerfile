@@ -4,6 +4,7 @@ FROM golang:1.16.5-alpine3.13 as builder
 # 启用go module
 # github actions 编译不设置代理 GOPROXY=https://goproxy.cn,direct \
 ENV GO111MODULE=on \
+    GOPROXY=https://goproxy.cn,direct \
     CGO_CFLAGS="-g -O2 -Wno-return-local-addr"
 
 WORKDIR /app
@@ -14,8 +15,8 @@ COPY . .
 RUN set -ex \
         && apk update \
         && apk upgrade \
-        && apk add gcc libc-dev \
-        && GOOS=linux GOARCH=amd64 go build .
+        && apk add gcc libc-dev git \
+        && go install -mod=mod
 
 # 由于我不止依赖二进制文件，还依赖views文件夹下的html文件还有assets文件夹下的一些静态文件
 # 所以我将这些文件放到了publish文件夹 /go/bin/webcron
