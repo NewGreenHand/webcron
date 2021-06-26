@@ -41,8 +41,23 @@
 	设为后台运行
 
 ### Docker 安装
+快速开始
+``` 
+docker run 
+    --name webcron \
+    -p 8000:8000 \
+    -v data:/app/data \
+    fillpit/webcron
+```
 
-
+|  环境变量   | 含义  | 举例  |
+|  ----  | ----  | --- |
+| DB_URL  | mysql 连接地址 | 用户名:密码@tcp(数据库地址:端口)/数据库名 |
+| DB_PREFIX  | 表前缀 | t_  |
+|  ADMIN_USER   | 管理员名称  | 默认 admin  |
+|  ADMIN_PWD   | 管理员密码  | 默认 admin123  |
+|  ADMIN_EMAIL   | 管理员邮箱  | xx@xx.com  |
+|  SQLITE_URL   | sqlite3 连接地址  | ./webcron.db (如果配置了 DB_URL 者不用配置这一项， 指定sqlite 的库文件地址， 如果文件不存在则自动生成) |
 
 
 访问： 

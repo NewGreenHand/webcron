@@ -61,16 +61,16 @@ func initAdminUser() {
 		user.Status = 0
 	}
 
-	user.UserName = os.Getenv("admin_user")
+	user.UserName = os.Getenv("ADMIN_USER")
 	if user.UserName == "" {
 		user.UserName = "admin"
 	}
-	pwd := os.Getenv("admin_pwd")
+	pwd := os.Getenv("ADMIN_PWD")
 	if pwd == "" {
 		pwd = "admin123"
 	}
 	user.Password = libs.Md5([]byte(pwd + user.Salt))
-	user.Email = os.Getenv("admin_email")
+	user.Email = os.Getenv("ADMIN_EMAIL")
 
 	line, err := UserUpdate(user)
 	if line == 0 {
