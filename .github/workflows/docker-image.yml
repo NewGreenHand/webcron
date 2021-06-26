@@ -12,18 +12,10 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags')
     steps:
       # 拉取master分支
       - name: Checkout
         uses: actions/checkout@v2
-      # 获取版本号
-      - name: Extract Version
-        id: version_step
-        run: |
-          echo "##[set-output name=version;]VERSION=${GITHUB_REF#$"refs/tags/v"}"
-          echo "##[set-output name=version_tag;]$GITHUB_REPOSITORY:${GITHUB_REF#$"refs/tags/v"}"
-          echo "##[set-output name=latest_tag;]$GITHUB_REPOSITORY:latest"
       # 设置qemu来编译多个平台的镜像
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -45,7 +37,4 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: |
-            fillpit/webcron:${{env.VERSION}}
             fillpit/webcron:latest
-          build-args: |
-            ${{steps.version_step.outputs.version}}
