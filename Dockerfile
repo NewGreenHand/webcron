@@ -44,11 +44,12 @@ RUN set -ex \
 
 # 指定运行时环境变量
 ENV GIN_MODE=release \
-    PORT=8000   \
-    TZ=${TZ}
+    PORT=8000 \
+    TZ=${TZ} \
+    SQLITE_URL=./data/webcorn.db
 
 EXPOSE 8000/tcp
 
-VOLUME /app
+VOLUME /app/data
 
 ENTRYPOINT ["webcron"]

@@ -21,7 +21,11 @@ func Init() {
 	if dsn != "" {
 		orm.RegisterDataBase("default", "mysql", dsn+"?charset=utf8")
 	} else {
-		orm.RegisterDataBase("default", "sqlite3", "./webcorn.db")
+		sqliteUrl := os.Getenv("SQLITE_URL")
+		if sqliteUrl == "" {
+			sqliteUrl = "./webcorn.db"
+		}
+		orm.RegisterDataBase("default", "sqlite3", sqliteUrl)
 	}
 
 	// 注册模型
