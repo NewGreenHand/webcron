@@ -41,5 +41,5 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: |
-            fillpit/webcron:latest
             fillpit/webcron:${{steps.version_step.outputs.version}}
+            fillpit/webcron:latest
