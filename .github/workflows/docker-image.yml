@@ -10,6 +10,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags')
     steps:
       # 获取版本号
       - name: Get version
