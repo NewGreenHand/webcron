@@ -13,6 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 获取版本号
+      - name: Get version
+        id: version_step
+        run: |
+          echo "##[set-output name=version;]${GITHUB_REF#$"refs/tags/v"}"
       # 拉取master分支
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,3 +43,4 @@ jobs:
           platforms: linux/arm64
           tags: |
             fillpit/webcron:latest
+            fillpit/webcron:${{steps.version_step.outputs.version}}
