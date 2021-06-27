@@ -7,8 +7,8 @@ import (
 type TaskLog struct {
 	Id          int
 	TaskId      int
-	Output      string
-	Error       string
+	Output      string `gorm:"type:text"`
+	Error       string `gorm:"type:text"`
 	Status      int
 	ProcessTime int
 	CreateTime  int64

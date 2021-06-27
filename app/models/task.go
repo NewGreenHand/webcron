@@ -21,7 +21,7 @@ type Task struct {
 	Description  string
 	CronSpec     string
 	Concurrent   int
-	Command      string
+	Command      string `gorm:"type:text"`
 	Status       int
 	Notify       int
 	NotifyEmail  string
