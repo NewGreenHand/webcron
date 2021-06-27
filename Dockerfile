@@ -20,7 +20,7 @@ RUN set -ex \
 
 # 由于我不止依赖二进制文件，还依赖views文件夹下的html文件还有assets文件夹下的一些静态文件
 # 所以我将这些文件放到了publish文件夹
-RUN mkdir publish && cp /go/bin/webcron publish && \
+RUN mkdir publish && cp /go/bin/webcron publish && cp docker_entrypoint.sh publish && \
     cp -r views publish && cp -r static publish && cp -r conf publish
 
 # 运行阶段指定scratch作为基础镜像
@@ -36,20 +36,23 @@ COPY --from=builder /app/publish .
 RUN set -ex \
        && apk update \
        && apk upgrade \
-       && apk add --no-cache sqlite bash tzdata \
+       && apk add --no-cache sqlite bash tzdata curl \
        && ln -s /app/webcron /usr/bin/webcron \
        && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
        && echo ${TZ} > /etc/timezone \
-       && rm -rf /var/cache/apk/*
+       && rm -rf /var/cache/apk/* \
+       && chmod +x ./docker_entrypoint.sh
 
 # 指定运行时环境变量
 ENV GIN_MODE=release \
     PORT=8000 \
     TZ=${TZ} \
-    SQLITE_URL=./data/webcorn.db
+    SQLITE_URL=./data/webcorn.db \
+    INIT_PYTHON=false \
+    INIT_NODEJS=false
 
 EXPOSE 8000/tcp
 
 VOLUME /app/data
 
-ENTRYPOINT ["webcron"]
+ENTRYPOINT ["./docker_entrypoint.sh"]

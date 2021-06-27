@@ -50,6 +50,8 @@ docker run
     fillpit/webcron
 ```
 
+可选环境变量 参数
+
 |  环境变量   | 含义  | 举例  |
 |  ----  | ----  | --- |
 | DB_URL  | mysql 连接地址 | 用户名:密码@tcp(数据库地址:端口)/数据库名 |
@@ -65,4 +67,4 @@ docker run
 http://localhost:8000
 
 帐号：admin
-密码：admin888
+密码：admin123
