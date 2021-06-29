@@ -6,27 +6,20 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
-	"os"
+	"strings"
 	"webcron/app/libs"
 )
 
 func Init() {
 	// 用户名:密码@tcp(数据库地址:端口)/数据库名
-	dsn := os.Getenv("DB_URL")
-	if dsn == "" {
-		dsn = beego.AppConfig.String("db.url")
-	}
+	dbUrl := beego.AppConfig.String("db.url")
+	driverName := "sqlite3"
 
 	// 注册数据库, ORM必须注册一个别名为 default 的数据库，作为默认使用
-	if dsn != "" {
-		orm.RegisterDataBase("default", "mysql", dsn+"?charset=utf8")
-	} else {
-		sqliteUrl := os.Getenv("SQLITE_URL")
-		if sqliteUrl == "" {
-			sqliteUrl = "./webcorn.db"
-		}
-		orm.RegisterDataBase("default", "sqlite3", sqliteUrl)
+	if !strings.Contains(dbUrl, ".db") {
+		driverName = "mysql"
 	}
+	orm.RegisterDataBase("default", driverName, dbUrl)
 
 	// 注册模型
 	orm.RegisterModel(new(User), new(Task), new(TaskGroup), new(TaskLog))
@@ -46,10 +39,7 @@ func Init() {
 }
 
 func TableName(name string) string {
-	prefix := os.Getenv("DB_PREFIX")
-	if prefix == "" {
-		prefix = beego.AppConfig.String("db.prefix")
-	}
+	prefix := beego.AppConfig.String("db.prefix")
 	return prefix + name
 }
 
@@ -61,16 +51,10 @@ func initAdminUser() {
 		user.Status = 0
 	}
 
-	user.UserName = os.Getenv("ADMIN_USER")
-	if user.UserName == "" {
-		user.UserName = "admin"
-	}
-	pwd := os.Getenv("ADMIN_PWD")
-	if pwd == "" {
-		pwd = "admin123"
-	}
+	user.UserName = beego.AppConfig.String("admin.user")
+	pwd := beego.AppConfig.String("admin.pwd")
 	user.Password = libs.Md5([]byte(pwd + user.Salt))
-	user.Email = os.Getenv("ADMIN_EMAIL")
+	user.Email = beego.AppConfig.String("admin.email")
 
 	line, err := UserUpdate(user)
 	if line == 0 {

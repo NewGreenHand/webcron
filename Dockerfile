@@ -47,12 +47,11 @@ RUN set -ex \
 ENV GIN_MODE=release \
     PORT=8000 \
     TZ=${TZ} \
-    SQLITE_URL=./data/webcorn.db \
     INIT_PYTHON=false \
     INIT_NODEJS=false
 
 EXPOSE 8000/tcp
 
-VOLUME /app/data
+VOLUME /app/conf
 
 ENTRYPOINT ["./docker_entrypoint.sh"]

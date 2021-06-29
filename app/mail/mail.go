@@ -13,15 +13,18 @@ var (
 )
 
 func init() {
+	// 同时发送人数的数量
 	queueSize, _ := beego.AppConfig.Int("mail.queue_size")
+	// email 服务地址
 	host := beego.AppConfig.String("mail.host")
+	// email 服务端口
 	port, _ := beego.AppConfig.Int("mail.port")
+	// email 服务授权用户
 	username := beego.AppConfig.String("mail.user")
+	// email 服务授权用户密码
 	password := beego.AppConfig.String("mail.password")
+	// email 邮件发送人
 	from := beego.AppConfig.String("mail.from")
-	if port == 0 {
-		port = 25
-	}
 
 	config = fmt.Sprintf(`{"username":"%s","password":"%s","host":"%s","port":%d,"from":"%s"}`, username, password, host, port, from)
 

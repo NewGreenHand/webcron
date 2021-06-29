@@ -31,7 +31,7 @@
 
 项目默认支持 sqlite3, 如需更换成 mysql 则可以修改 conf/app.conf 下的 db.url
 
-    db.url = 用户名:密码@tcp(数据库地址:端口)/数据库名
+    db.url = 用户名:密码@tcp(数据库地址:端口)/数据库名?charset=utf8
 
 运行
 	
@@ -54,12 +54,18 @@ docker run
 
 |  环境变量   | 含义  | 举例  |
 |  ----  | ----  | --- |
-| DB_URL  | mysql 连接地址 | 用户名:密码@tcp(数据库地址:端口)/数据库名 |
-| DB_PREFIX  | 表前缀 | t_  |
-|  ADMIN_USER   | 管理员名称  | 默认 admin  |
-|  ADMIN_PWD   | 管理员密码  | 默认 admin123  |
-|  ADMIN_EMAIL   | 管理员邮箱  | xx@xx.com  |
-|  SQLITE_URL   | sqlite3 连接地址  | ./webcron.db (如果配置了 DB_URL 者不用配置这一项， 指定sqlite 的库文件地址， 如果文件不存在则自动生成) |
+| DB_URL  | mysql 连接地址 | 用户名:密码@tcp(数据库地址:端口)/数据库名?charset=utf8 |
+| DB_PREFIX  | 表前缀 | default: t_  |
+|  ADMIN_USER   | 管理员名称  | default: admin  |
+|  ADMIN_PWD   | 管理员密码  | default: admin123  |
+|  ADMIN_EMAIL   | 管理员邮箱  |   |
+|  MAIL_QUEUE_SIZE   | 邮件发送队列大小  | default: 100 |
+|  MAIL_FROM   | 邮件发送人名称  |  |
+|  MAIL_HOST   | 邮箱服务器地址  |  |
+|  MAIL_PORT   | 邮箱服务器端口  | default: 25 |
+|  MAIL_USER   | 邮箱授权用户  |  |
+|  MAIL_PWD   | 邮箱密码  | | 
+
 
 
 访问： 
